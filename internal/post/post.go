@@ -1,6 +1,10 @@
 package post
 
-import "time"
+import (
+	"time"
+
+	"github.com/rs/xid"
+)
 
 type Post struct {
 	ID        string
@@ -10,17 +14,27 @@ type Post struct {
 	UpdatedAt time.Time
 }
 
+func NewPost(title, content string) Post {
+	return Post{
+		ID:        xid.New().String(),
+		Title:     title,
+		Content:   content,
+		CreatedAt: time.Now().UTC().Round(time.Millisecond),
+		UpdatedAt: time.Now().UTC().Round(time.Millisecond),
+	}
+}
+
 type Storage interface {
 	ByID(id string) (Post, error)
 	ByFilter(filter Filter) ([]Post, error)
 	Insert(post Post) error
-	Replace(post Post) error
-	Remove(post Post) error
+	Update(post Post) error
+	Remove(id string) error
 }
 
 type Filter struct {
 	From   time.Time
 	To     time.Time
-	Limit  int
-	Offset int
+	Limit  uint // required
+	Offset uint
 }

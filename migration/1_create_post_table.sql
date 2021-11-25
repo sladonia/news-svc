@@ -7,4 +7,4 @@ CREATE TABLE post
     updated_at timestamp NOT NULL
 );
 
-CREATE INDEX created_at_idx on post using btree(created_at);
+CREATE INDEX created_at_idx on post using btree(created_at DESC);

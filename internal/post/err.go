@@ -4,5 +4,5 @@ import "errors"
 
 var (
 	ErrNotFound        = errors.New("record not found")
-	ErrVersionConflict = errors.New("version conflict")
+	ErrorAlreadyExists = errors.New("record already exists")
 )
