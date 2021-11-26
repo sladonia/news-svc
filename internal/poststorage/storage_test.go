@@ -8,13 +8,16 @@ import (
 	"github.com/doug-martin/goqu/v9"
 	_ "github.com/doug-martin/goqu/v9/dialect/postgres"
 	_ "github.com/lib/pq"
+	"github.com/ory/dockertest/v3"
 	"github.com/sladonia/news-svc/internal/post"
+	"github.com/sladonia/news-svc/internal/testtool"
 	"github.com/stretchr/testify/suite"
 )
 
 const (
-	testDBDSN     = "postgresql://user:password@localhost:5432/news?sslmode=disable"
 	postTableName = "post"
+	testDBNAME    = "news_test"
+	migrationsDir = "../../migration"
 )
 
 // db fixtures
@@ -31,12 +34,36 @@ var (
 type Suite struct {
 	suite.Suite
 
-	db      *goqu.Database
-	storage post.Storage
+	db                *goqu.Database
+	storage           post.Storage
+	dockerPool        *dockertest.Pool
+	postgresContainer *dockertest.Resource
 }
 
 func (s *Suite) SetupSuite() {
-	postgresClient, err := sql.Open("postgres", testDBDSN)
+	pool, err := dockertest.NewPool("")
+	if err != nil {
+		panic(err)
+	}
+	s.dockerPool = pool
+
+	postgresContainer, dbDSN, err := testtool.NewPostgresContainer(pool, testDBNAME)
+	if err != nil {
+		panic(err)
+	}
+	s.postgresContainer = postgresContainer
+
+	var postgresClient *sql.DB
+
+	pool.MaxWait = 120 * time.Second
+	err = pool.Retry(func() error {
+		postgresClient, err = sql.Open("postgres", dbDSN)
+		if err != nil {
+			panic(err)
+		}
+
+		return postgresClient.Ping()
+	})
 	if err != nil {
 		panic(err)
 	}
@@ -50,7 +77,19 @@ func (s *Suite) SetupSuite() {
 	}
 	goqu.SetTimeLocation(loc)
 
+	err = testtool.ApplyDBMigrations(s.db, migrationsDir)
+	if err != nil {
+		panic(err)
+	}
+
 	// TODO: run migration
+}
+
+func (s *Suite) TearDownSuite() {
+	err := s.dockerPool.Purge(s.postgresContainer)
+	if err != nil {
+		panic(err)
+	}
 }
 
 func TestRunSuite(t *testing.T) {
@@ -122,7 +161,7 @@ func (s *Suite) TestByFilter() {
 
 	s.Run("after_date", func() {
 		f := post.Filter{
-			From: time.Now().Add(-time.Hour),
+			From:   time.Now().Add(-time.Hour),
 			Limit:  10,
 			Offset: 0,
 		}
@@ -134,8 +173,8 @@ func (s *Suite) TestByFilter() {
 
 	s.Run("no_results_found", func() {
 		f := post.Filter{
-			From: time.Now().Add(-2*time.Hour),
-			To: time.Now().Add(-1*time.Hour),
+			From:   time.Now().Add(-2 * time.Hour),
+			To:     time.Now().Add(-1 * time.Hour),
 			Limit:  10,
 			Offset: 0,
 		}
