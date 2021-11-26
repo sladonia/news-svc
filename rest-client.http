@@ -1,0 +1,34 @@
+### Get service name
+GET http://{{host}}/
+
+### Create post
+POST http://{{host}}/posts
+Content-Type: application/json
+
+{
+  "title": "top news!",
+  "content": "covid is over!"
+}
+
+### Get post by id
+GET http://{{host}}/posts/c6ggan5s2lc73c5knqe0
+
+### Upsert post
+PUT http://{{host}}/posts/c6ghb45s2lc1ij9240a0
+Content-Type: application/json
+
+{
+  "title": "update title",
+  "content": "updated content"
+}
+
+### Get post by id
+DELETE http://{{host}}/posts/c6ghb45s2lc1ij9240a0
+
+### Find posts
+GET http://{{host}}/posts
+ ?limit=2
+ &offset=2
+ &from=2021-11-26T16:03:40.000Z
+# &to=2021-11-26T16:03:40.000Z
+Content-Type: application/json

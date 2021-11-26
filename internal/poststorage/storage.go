@@ -2,6 +2,7 @@ package poststorage
 
 import (
 	"errors"
+	"time"
 
 	"github.com/doug-martin/goqu/v9"
 	"github.com/lib/pq"
@@ -85,12 +86,14 @@ func (s *storage) Insert(p post.Post) error {
 	return err
 }
 
-func (s *storage) Update(p post.Post) error {
-	postSQL := NewPostSQL(p)
-
+func (s *storage) Update(id, title, content string) error {
 	res, err := s.db.Update(s.postTableName).
-		Where(goqu.C(columnID).Eq(p.ID)).
-		Set(postSQL).
+		Where(goqu.C(columnID).Eq(id)).
+		Set(goqu.Record{
+			columnTitle:     title,
+			columnContent:   content,
+			columnUpdatedAt: time.Now().UTC().Round(time.Millisecond),
+		}).
 		Executor().
 		Exec()
 

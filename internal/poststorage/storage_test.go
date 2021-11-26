@@ -187,23 +187,22 @@ func (s *Suite) TestByFilter() {
 
 func (s *Suite) TestReplace() {
 	s.Run("replace", func() {
-		updatedContent := "content2"
+		newTitle := "new_title"
+		newContent := "new_content"
 
-		updated := post1
-		updated.Content = updatedContent
-
-		err := s.storage.Update(updated)
+		err := s.storage.Update("1", newTitle, newContent)
 		s.NoError(err)
 
 		retrieved, err := s.storage.ByID(post1.ID)
 		s.NoError(err)
-		s.Equal(updated.Content, retrieved.Content)
+		s.Equal(newTitle, retrieved.Title)
+		s.Equal(newContent, retrieved.Content)
+		s.Equal(post1.CreatedAt, retrieved.CreatedAt)
+		s.True(retrieved.UpdatedAt.After(post1.UpdatedAt))
 	})
 
 	s.Run("not_found", func() {
-		newPost := post.NewPost("extra new", "something happened")
-
-		err := s.storage.Update(newPost)
+		err := s.storage.Update("unexisting", "eq", "qw")
 		s.Error(err)
 		s.ErrorIs(err, post.ErrNotFound)
 	})

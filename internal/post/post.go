@@ -28,7 +28,7 @@ type Storage interface {
 	ByID(id string) (Post, error)
 	ByFilter(filter Filter) ([]Post, error)
 	Insert(post Post) error
-	Update(post Post) error
+	Update(id, title, content string) error
 	Remove(id string) error
 }
 
