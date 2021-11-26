@@ -11,7 +11,7 @@ Content-Type: application/json
 }
 
 ### Get post by id
-GET http://{{host}}/posts/c6gl27idc0ti9jc7jdkg
+GET http://{{host}}/posts/c7a4qt8jfnac73f5q280
 
 ### Upsert post
 PUT http://{{host}}/posts/c6ghb45s2lc1ij9240a0
@@ -22,7 +22,7 @@ Content-Type: application/json
   "content": "updated content"
 }
 
-### Get post by id
+### Delete post by id
 DELETE http://{{host}}/posts/c6gl22adc0ti9jc7jdk0
 
 ### Find posts

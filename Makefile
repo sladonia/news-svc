@@ -7,7 +7,7 @@ build:
 ifeq ($(VERSION),)
 	$(eval VERSION := "dev")
 endif
-	docker build -t $(VERSION) .
+	docker build -t news:$(VERSION) .
 
 up:
 	docker-compose up -d
