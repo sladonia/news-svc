@@ -39,5 +39,5 @@ func (h *Handler) createPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.writeResponse(w, http.StatusOK, p)
+	h.writeResponse(w, http.StatusCreated, p)
 }

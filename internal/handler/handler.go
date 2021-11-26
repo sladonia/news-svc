@@ -39,12 +39,7 @@ type Handler struct {
 
 func (h *Handler) Register(r *mux.Router) {
 	r.HandleFunc("/", h.identity)
-	r.HandleFunc("/posts", h.createPost).Queries(
-		"limit", "{limit}",
-		"offset", "{offset}",
-		"from", "{from}",
-		"to", "{to}",
-	).Name("createPost").Methods("POST")
+	r.HandleFunc("/posts", h.createPost).Name("createPost").Methods("POST")
 	r.HandleFunc("/posts", h.findPosts).Name("findPosts").Methods("GET")
 	r.HandleFunc("/posts/{id}", h.postByID).Name("postByID").Methods("GET")
 	r.HandleFunc("/posts/{id}", h.replacePost).Name("replacePost").Methods("PUT")

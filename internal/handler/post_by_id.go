@@ -13,7 +13,7 @@ func (h *Handler) postByID(w http.ResponseWriter, r *http.Request) {
 
 	p, err := h.postService.GetPost(id)
 	if err != nil {
-		h.log.Error("failed to get post", zap.Error(err))
+		h.log.Info("failed to get post", zap.Error(err))
 		h.writeError(w, err, err.Error())
 
 		return

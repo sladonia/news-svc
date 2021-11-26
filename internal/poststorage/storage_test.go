@@ -81,8 +81,6 @@ func (s *Suite) SetupSuite() {
 	if err != nil {
 		panic(err)
 	}
-
-	// TODO: run migration
 }
 
 func (s *Suite) TearDownSuite() {

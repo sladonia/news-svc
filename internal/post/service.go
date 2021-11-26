@@ -35,6 +35,7 @@ func (s *service) UpsertPost(id, title, content string) error {
 	}
 
 	newPost := NewPost(title, content)
+	newPost.ID = id
 
 	return s.storage.Insert(newPost)
 }
